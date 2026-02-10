@@ -2,12 +2,22 @@ import { getDB } from '$lib/server/db';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ platform }) {
-    const db = await getDB(platform);
+    let db;
+    try {
+        db = await getDB(platform);
+    } catch (e) {
+        return {
+            guestbook: [],
+            error: `Database Error: ${e.message}`
+        };
+    }
 
     if (!db) {
         // During local development or if platform is not available, return empty or mock
         return {
-            guestbook: []
+            guestbook: [],
+            // Only show error if we expected a DB but got none (e.g. dev mode without local DB)
+            error: 'Database connection failed. Please check server logs.'
         };
     }
 
@@ -31,7 +41,13 @@ export async function load({ platform }) {
 /** @type {import('./$types').Actions} */
 export const actions = {
     default: async ({ request, platform }) => {
-        const db = await getDB(platform);
+        let db;
+        try {
+            db = await getDB(platform);
+        } catch (e) {
+            return { success: false, error: `Database Error: ${e.message}` };
+        }
+
         if (!db) {
             return { success: false, error: 'Database not available' };
         }
