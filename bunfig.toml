@@ -1,0 +1,8 @@
+[install]
+# Bun 전용 설정
+optional = true
+dev = true
+peer = true
+
+[install.cache]
+disable = false
