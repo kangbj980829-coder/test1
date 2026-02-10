@@ -1,6 +1,8 @@
+import { getDB } from '$lib/server/db';
+
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ platform }) {
-    const db = platform?.env?.DB;
+    const db = await getDB(platform);
 
     if (!db) {
         // During local development or if platform is not available, return empty or mock
@@ -29,7 +31,7 @@ export async function load({ platform }) {
 /** @type {import('./$types').Actions} */
 export const actions = {
     default: async ({ request, platform }) => {
-        const db = platform?.env?.DB;
+        const db = await getDB(platform);
         if (!db) {
             return { success: false, error: 'Database not available' };
         }
